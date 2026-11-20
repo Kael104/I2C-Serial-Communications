@@ -258,8 +258,6 @@ uint16_t SERCOM2_I2C_Write_Polled(uint8_t addr, uint8_t *buf, uint16_t len) {
     return pos;
 }
 
-}
-
 uint16_t SERCOM2_I2C_Read_Polled(uint8_t addr, uint8_t *buf, uint16_t len) {
     uint8_t flags = 0;
     uint16_t pos = 0;
