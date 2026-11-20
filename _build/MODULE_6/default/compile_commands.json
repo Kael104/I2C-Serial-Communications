@@ -1,0 +1,14 @@
+[
+{
+  "directory": "C:/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/_build/MODULE_6/default",
+  "command": "\"c:\\Program Files\\Microchip\\xc32\\v6.00\\bin\\xc32-gcc.exe\" -DXPRJ_default=default -D__DEBUG -IC:/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/cmake/MODULE_6/default/../../.. -IC:/Users/LENOVO/.mchp_packs/ARM/CMSIS/5.4.0/CMSIS/Core/Include -x c -fdiagnostics-color=always -g -x c -c -mprocessor=32CM5164LS00048 -mdfp=C:/Users/LENOVO/.mchp_packs/Microchip/PIC32CM-LS_DFP/1.3.278/PIC32CM-LS00 -o CMakeFiles\\MODULE_6_default_default_XC32_compile.dir\\C_\\Users\\LENOVO\\MPLABXProjects\\AGTING\\MODULE_6.X\\i2c_master.c.o -c C:\\Users\\LENOVO\\MPLABXProjects\\AGTING\\MODULE_6.X\\i2c_master.c",
+  "file": "C:/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/i2c_master.c",
+  "output": "C:/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/_build/MODULE_6/default/CMakeFiles/MODULE_6_default_default_XC32_compile.dir/C_/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/i2c_master.c.o"
+},
+{
+  "directory": "C:/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/_build/MODULE_6/default",
+  "command": "\"c:\\Program Files\\Microchip\\xc32\\v6.00\\bin\\xc32-gcc.exe\" -DXPRJ_default=default -D__DEBUG -IC:/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/cmake/MODULE_6/default/../../.. -IC:/Users/LENOVO/.mchp_packs/ARM/CMSIS/5.4.0/CMSIS/Core/Include -x c -fdiagnostics-color=always -g -x c -c -mprocessor=32CM5164LS00048 -mdfp=C:/Users/LENOVO/.mchp_packs/Microchip/PIC32CM-LS_DFP/1.3.278/PIC32CM-LS00 -o CMakeFiles\\MODULE_6_default_default_XC32_compile.dir\\C_\\Users\\LENOVO\\MPLABXProjects\\AGTING\\MODULE_6.X\\main.c.o -c C:\\Users\\LENOVO\\MPLABXProjects\\AGTING\\MODULE_6.X\\main.c",
+  "file": "C:/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/main.c",
+  "output": "C:/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/_build/MODULE_6/default/CMakeFiles/MODULE_6_default_default_XC32_compile.dir/C_/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/main.c.o"
+}
+]
