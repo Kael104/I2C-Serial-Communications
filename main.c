@@ -27,7 +27,7 @@ int main(void)
     mx[0] = 0;
     mx[1] = 0;
 	SERCOM2_I2C_Write_Polled(0x25, mx, 2);
-    mx[0] = 0xA;
+    mx[0] = 0xA; // 0x09
     // mx[1] = ~(0x9D);
     mx[1] = (uint8_t)~'K';
     

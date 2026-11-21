@@ -1,0 +1,8 @@
+{
+    "cmake.sourceDirectory": "C:/Users/LENOVO/MPLABXProjects/AGTING/MODULE_6.X/cmake/MODULE_6/default",
+    "mplab.clangd.compileCommandsDir": "${workspaceFolder}/_build/MODULE_6/default",
+    "mplab.clangd.arguments": [
+        "--header-insertion=never"
+    ],
+    "mplab.clangd.path": "c:\\Program Files\\Microchip\\xc32\\v6.00\\bin\\xc32-clangd.exe"
+}
