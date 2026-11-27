@@ -266,8 +266,8 @@ uint16_t SERCOM2_I2C_Read_Polled(uint8_t addr, uint8_t *buf, uint16_t len) {
     
     if ((addr > 0x7F) || (buf == NULL && len > 0) || (len == 0))
         return 0;
+
     // Step 0: Wait for the bus to become idle
-    // Either wait for the bus to become idle or break if not idle
     while ((SERCOM2_REGS->I2CM.SERCOM_STATUS &
             SERCOM_I2CM_STATUS_BUSSTATE_Msk) !=
             SERCOM_I2CM_STATUS_BUSSTATE(0x01UL)) {
@@ -276,15 +276,20 @@ uint16_t SERCOM2_I2C_Read_Polled(uint8_t addr, uint8_t *buf, uint16_t len) {
             return 0;
         }
     }
-    // Step 1: Initialize transfer by writing to ADDR (ADDR[0] indicates direction)
+
+    // Clear ACKACT (0 = ACK) so Smart Mode ACKs earlier bytes in multi-byte reads
+    SERCOM2_REGS->I2CM.SERCOM_CTRLB &= ~SERCOM_I2CM_CTRLB_ACKACT_Msk;
+
+    // Step 1: Initialize transfer by writing to ADDR (ADDR[0] = 1 for READ)
     SERCOM2_REGS->I2CM.SERCOM_ADDR = ((uint32_t)addr << 1) | 1U;
+
     // Step 2: Wait for and process interrupt flags
-    // if error, abort and exit
     temp = 0;
     while (1) {
         flags = SERCOM2_REGS->I2CM.SERCOM_INTFLAG;
 
-        if (flags & SERCOM_I2CM_INTFLAG_ERROR_Msk) {
+        // MB during address phase indicates an address NACK or arbitration loss
+        if (flags & (SERCOM_I2CM_INTFLAG_ERROR_Msk | SERCOM_I2CM_INTFLAG_MB_Msk)) {
             SERCOM2_I2C_Abort();
             return 0;
         }
@@ -298,24 +303,22 @@ uint16_t SERCOM2_I2C_Read_Polled(uint8_t addr, uint8_t *buf, uint16_t len) {
         }
     }
     
-    // A read must not have arbitration loss, a bus error, or MB asserted.
-    if ((SERCOM2_REGS->I2CM.SERCOM_INTFLAG & SERCOM_I2CM_INTFLAG_MB_Msk) ||
-        (SERCOM2_REGS->I2CM.SERCOM_STATUS &
-         (SERCOM_I2CM_STATUS_ARBLOST_Msk | SERCOM_I2CM_STATUS_BUSERR_Msk |
-          SERCOM_I2CM_STATUS_RXNACK_Msk))) {
+    // Verify no arbitration loss, bus error, or NACK occurred
+    if (SERCOM2_REGS->I2CM.SERCOM_STATUS &
+        (SERCOM_I2CM_STATUS_ARBLOST_Msk | SERCOM_I2CM_STATUS_BUSERR_Msk |
+         SERCOM_I2CM_STATUS_RXNACK_Msk)) {
         SERCOM2_I2C_Abort();
         return 0;
     }
     
-    // Step 3: Read data, respond with ACKs (I2C smart mode automatically sends an ACK when DATA is read)
+    // Step 3: Read data, respond with ACKs (Smart Mode sends ACK on DATA read)
     for (pos = 0; pos < len; ) {
-        // SB is already set for the first byte. For later bytes, wait for SB.
         if (pos > 0) {
             temp = 0;
             while (1) {
                 flags = SERCOM2_REGS->I2CM.SERCOM_INTFLAG;
 
-                if (flags & SERCOM_I2CM_INTFLAG_ERROR_Msk) {
+                if (flags & (SERCOM_I2CM_INTFLAG_ERROR_Msk | SERCOM_I2CM_INTFLAG_MB_Msk)) {
                     SERCOM2_I2C_Abort();
                     return pos;
                 }
@@ -329,15 +332,14 @@ uint16_t SERCOM2_I2C_Read_Polled(uint8_t addr, uint8_t *buf, uint16_t len) {
                 }
             }
 
-            if ((SERCOM2_REGS->I2CM.SERCOM_INTFLAG & SERCOM_I2CM_INTFLAG_MB_Msk) ||
-                (SERCOM2_REGS->I2CM.SERCOM_STATUS &
-                 (SERCOM_I2CM_STATUS_ARBLOST_Msk | SERCOM_I2CM_STATUS_BUSERR_Msk))) {
+            if (SERCOM2_REGS->I2CM.SERCOM_STATUS &
+                (SERCOM_I2CM_STATUS_ARBLOST_Msk | SERCOM_I2CM_STATUS_BUSERR_Msk)) {
                 SERCOM2_I2C_Abort();
                 return pos;
             }
         }
 
-        // For the final byte, request NACK and STOP before reading DATA.
+        // For the final byte, request NACK and STOP before reading DATA
         if (pos == (uint16_t)(len - 1U)) {
             SERCOM2_REGS->I2CM.SERCOM_CTRLB |= SERCOM_I2CM_CTRLB_ACKACT_Msk;
             SERCOM2_REGS->I2CM.SERCOM_CTRLB |= SERCOM_I2CM_CTRLB_CMD(0x3UL);
@@ -356,7 +358,7 @@ uint16_t SERCOM2_I2C_Read_Polled(uint8_t addr, uint8_t *buf, uint16_t len) {
         pos++;
     }
     
-    // Step 4: Issue stop condition and return state back to idle
+    // Step 4: Wait for the bus state to return to IDLE
     temp = 0;
     while ((SERCOM2_REGS->I2CM.SERCOM_STATUS &
             SERCOM_I2CM_STATUS_BUSSTATE_Msk) !=
